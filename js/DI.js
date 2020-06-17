@@ -10,6 +10,11 @@ let
     ERROR_VALUE = 'value must be an exist service',
     ERROR_TARGET_VALUE = 'pass null if there is no value  nedded',
     ERROR_DEPENDENT = 'This is not a dependent of the reqeusted instance';
+
+function isArrayHasItems(array) {
+    return Array.isArray(array) && array.length > 0;
+}
+
 class Injector {
     constructor() {
         this.container = {};
