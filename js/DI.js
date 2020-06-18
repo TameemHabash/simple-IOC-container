@@ -64,10 +64,10 @@ class Injector {
                 const valueLable = Object.keys(value)[0];
 
                 if (typeof value !== 'object' || Object.keys(value).length !== 2 || typeof values[i][valueLable] !== 'string') {
-                    throw new Error(ERROR_VALUES);
+                    throw new Error(`${ERROR_VALUES} for '${values[i][valueLable]}'`);
                 }
                 if (!this.container[values[i][valueLable]]) {
-                    throw new Error(ERROR_VALUE);
+                    throw new Error(`${ERROR_VALUE} for '${values[i][valueLable]}'`);
                 }
                 //has been commented because the value you passed may be for a low dependent of the requested service
                 // if (service.deps) {
