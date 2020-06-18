@@ -66,7 +66,7 @@ class Injector {
                 if (typeof value !== 'object' || Object.keys(value).length !== 2 || typeof values[i][valueLable] !== 'string') {
                     throw new Error(ERROR_VALUES);
                 }
-                if (!this.container[valueLable]) {
+                if (!this.container[values[i][valueLable]]) {
                     throw new Error(ERROR_VALUE);
                 }
                 //has been commented because the value you passed may be for a low dependent of the requested service
