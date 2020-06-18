@@ -3,7 +3,7 @@ let
     ERROR_REGISTRATION = 'Already registered.',
     ERROR_ARRAY = 'Must pass array with constructor item at least',
     ERROR_FUNCTION = 'Must pass function to invoke.',
-    ERROR_SERVICE = `Service does not exist ${label}`,
+    ERROR_SERVICE = 'Service does not exist',
     ERROR_LABEL = 'lable must be a string',
     ERROR_DEPENDENCIES = 'Dependencies must be strings',
     ERROR_VALUES = 'values must be objects contains two properties: label string and value that will be passed to constructor',
@@ -54,7 +54,7 @@ class Injector {
         //     throw new Error(ERROR_DEPENDENT);
         // }
         if (!service) {
-            throw new Error(ERROR_SERVICE);
+            throw new Error(`'${label}'${ERROR_SERVICE}`);
         }
         if (typeof targetValue === 'object' || typeof targetValue === 'undefined' || typeof targetValue === 'function' || typeof targetValue === 'bigint') {
             throw new Error(ERROR_TARGET_VALUE);
