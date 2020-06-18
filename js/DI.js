@@ -56,7 +56,7 @@ class Injector {
         if (!service) {
             throw new Error(`'${label}'${ERROR_SERVICE}`);
         }
-        if (typeof targetValue === 'object' || typeof targetValue === 'undefined' || typeof targetValue === 'function' || typeof targetValue === 'bigint') {
+        if ((typeof targetValue === 'object' && targetValue !== null) || typeof targetValue === 'undefined' || typeof targetValue === 'function' || typeof targetValue === 'bigint') {
             throw new Error(ERROR_TARGET_VALUE);
         }
         if (isArrayHasItems(values)) {
@@ -133,4 +133,4 @@ class Injector {
     }
 }
 
-export default DI = new Injector();
+export default new Injector();
