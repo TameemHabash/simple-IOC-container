@@ -1,6 +1,7 @@
 let
     ERROR_RECURSION = 'Recursive failure : Circular reference for dependency ',
-    ERROR_REGISTRATION = 'Already registered.',
+    ERROR_REGISTRED = 'Already registered.',
+    ERROR_NOT_REGISTRED = 'Not registered yet service',
     ERROR_ARRAY = 'Must pass array with constructor item at least',
     ERROR_FUNCTION = 'Must pass function to invoke.',
     ERROR_SERVICE = 'Service does not exist',
@@ -9,7 +10,7 @@ let
     ERROR_VALUES = 'values must be objects contains two properties: label string and value that will be passed to constructor',
     ERROR_VALUE = 'value must be an exist service',
     ERROR_TARGET_VALUE = 'pass null if there is no value  nedded',
-    ERROR_DEPENDENT = 'This is not a dependent of the reqeusted instance';
+    WARNNING_DEPENDENT = 'This is not a dependent of the reqeusted instance';
 
 function isArrayHasItems(array) {
     return Array.isArray(array) && array.length > 0;
@@ -22,7 +23,7 @@ class Injector {
 
     register(label, arrayOfDependencies) {
         if (this.container[label]) {
-            throw new Error(ERROR_REGISTRATION);
+            throw new Error(ERROR_REGISTRED);
         }
         if (!isArrayHasItems(arrayOfDependencies)) {
             throw new Error(ERROR_ARRAY);
@@ -45,19 +46,21 @@ class Injector {
             deps: arrayOfDependencies.length > 1 ? arrayOfDependencies.slice(0, arrayOfDependencies.length - 1) : null
         };
     }
-
     getInstanceOf(label, targetValue, ...values) {
         const service = this.container[label];
-        //checks the validaty of the passed parameters(future work below)
-        //check if it's existing in the requested instance
-        // if (!deliveredDependent) {
-        //     throw new Error(ERROR_DEPENDENT);
-        // }
+
         if (!service) {
             throw new Error(`'${label}'${ERROR_SERVICE}`);
         }
         if ((typeof targetValue === 'object' && targetValue !== null) || typeof targetValue === 'undefined' || typeof targetValue === 'function' || typeof targetValue === 'bigint') {
             throw new Error(ERROR_TARGET_VALUE);
+        }
+        if (service.deps) {
+            service.deps.forEach((dep) => {
+                if (!this.container[dep]) {
+                    throw new Error(`'${dep}' ${ERROR_NOT_REGISTRED}`);
+                }
+            });
         }
         if (isArrayHasItems(values)) {
             values.forEach((value, i) => {
@@ -69,20 +72,14 @@ class Injector {
                 if (!this.container[values[i][valueLable]]) {
                     throw new Error(`${ERROR_VALUE} for '${values[i][valueLable]}'`);
                 }
-                //has been commented because the value you passed may be for a low dependent of the requested service
-                // if (service.deps) {
-                //     const valueInServiceDeps = service.deps.find((dep, j) => {
-                //         return dep === values[i][valueLable];
-                //     });
-                //     if (!valueInServiceDeps) {
-                //         throw new Error(ERROR_DEPENDENT);
-                //     }
-                // }
 
             });
         }
+
+        //   future work: [check if the passed parameters {objects} are low dependent of the requested service or not, and throw WARNNING_DEPENDENT if any parameters is not needed ] and [check for circular reference for dependency to throw ERROR_RECURSION Error].
+
+
         //do the process
-        //values.map((value,i)=>{
         if (service.deps) {
             const neededParams = [];
             const readyParams = [];
@@ -112,11 +109,6 @@ class Injector {
                 readyParams.push(this.getInstanceOf(dep, deliveredDependentValue, ...neededParams));
                 //clear array for the immediate function call
                 neededParams.splice(0, neededParams.length);
-
-                // const dependentConstructor = this.container[dep];
-                //     dependentConstructor(deliveredValue)
-                // }
-
             });
             if (targetValue) {
                 return new service.construct(targetValue, ...readyParams);
@@ -129,7 +121,6 @@ class Injector {
             }
             return new service.construct();
         }
-        // });
     }
 }
 
